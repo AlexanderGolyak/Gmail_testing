@@ -1,7 +1,23 @@
 source 'https://rubygems.org'
 
-gem 'selenium-webdriver'
+gem 'chunky_png'
 gem 'cucumber'
-gem 'watir-webdriver'
 gem 'page-object'
+gem 'parallel_tests'
+gem 'rake'
+gem 'rspec-expectations'
+gem 'syntax'
+gem 'rautomation'
+gem 'watir-webdriver'
+gem 'gherkin'
+gem 'ci_reporter'
+gem 'headless'
+gem 'mechanize'
+gem 'anemone'
+gem 'selenium-webdriver'
+gem 'thor'
+gem 'thor-scmversion'
+gem 'rest-client'
+
+
 

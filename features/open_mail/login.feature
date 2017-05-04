@@ -1,14 +1,17 @@
-@manager @accountholder @supervisor @payperiods @attendance
-Feature: Managing Pay Periods
-  As a Account Holder / Manager
-  I want to manage Pay Periods
+Feature: Login
+  As a User
+  I want to login into my google mail account
 
   Background:
     Given I am on login page
 
-  @happypath @accountholder @manager
-  Scenario: Add Pay Period
-    When I enter valid login
+  Scenario: Login with valid credentials
+    When I click at arrow button
+      And I click at Use another account button
+      And I enter valid email
+      And I click Next button
       And I enter valid password
-      And I click Login button
+      And I click Next button
     Then I logged in
+
+

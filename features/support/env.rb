@@ -1,7 +1,20 @@
-require 'watir-webdriver'
-require 'selenium-webdriver'
+require 'bundler/setup'
 require 'page-object'
+require 'page-object/page_factory'
+require 'yaml'
+require 'logger'
+require 'open-uri'
+require 'net/http'
+require 'net/https'
+require 'uri'
+require 'mechanize'
+require 'anemone'
+require 'parallel_tests'
+require 'date'
+require 'securerandom'
+require 'rest-client'
 
+=begin
 Before do |scenario|
   @browser = Watir::Browser.new
   @metadata = Hash.new
@@ -9,10 +22,6 @@ Before do |scenario|
   @metadata[:scenario] = scenario.name
   @metadata[:tags] = scenario.source_tag_names
 end
-
-# Before do
-#   @browser = Watir::Browser.new
-# end
 
 After do |scenario|
   if scenario.failed?
@@ -25,3 +34,32 @@ After do |scenario|
     @browser.close
   end
 end
+=end
+
+World(PageObject::PageFactory)
+
+if ENV['HEADLESS']
+  require 'headless'
+  headless = Headless.new
+  headless.start
+  at_exit do
+    headless.destroy
+  end
+end
+
+Before do
+  @browser = Watir::Browser.new
+  @browser.driver.manage.window.maximize
+end
+
+# after do
+#   @browser.close
+# end
+
+# $accounts =
+#     {
+#         "Account1" => ["rubyautomationtraining@gmail.com", "1qaz!QAZ1q"],
+#     }
+
+#why its not blue as in other project?
+# data = {"username" => "#{$accounts["Account1"][0]}", "password" => "#{$accounts["Account1"][1]}"}
