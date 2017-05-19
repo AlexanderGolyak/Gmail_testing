@@ -7,11 +7,9 @@ Feature: Login
 
   Scenario: Login with valid credentials
     When I click at arrow button
-      And I click at Use another account button
-      And I enter valid email
-      And I click Next button
-      And I enter valid password
-      And I click Next button
+    And I click at Use another account button
+    And I enter email for account1
+    And I click Next button
+    And I enter password for account1
+    And I click Next button
     Then I logged in
-
-

@@ -13,6 +13,8 @@ require 'parallel_tests'
 require 'date'
 require 'securerandom'
 require 'rest-client'
+# require 'selenium-webdriver'
+
 
 =begin
 Before do |scenario|
@@ -48,18 +50,12 @@ if ENV['HEADLESS']
 end
 
 Before do
-  @browser = Watir::Browser.new
+  @browser_name = :firefox if ENV['BROWSER'] == 'ff'
+  @browser_name = :chrome unless ENV['BROWSER']
+  @browser = Watir::Browser.new :firefox
   @browser.driver.manage.window.maximize
 end
 
-# after do
-#   @browser.close
-# end
-
-# $accounts =
-#     {
-#         "Account1" => ["rubyautomationtraining@gmail.com", "1qaz!QAZ1q"],
-#     }
-
-#why its not blue as in other project?
-# data = {"username" => "#{$accounts["Account1"][0]}", "password" => "#{$accounts["Account1"][1]}"}
+After do
+  @browser.close
+end

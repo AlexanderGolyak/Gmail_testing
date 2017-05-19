@@ -1,97 +1,182 @@
-Given(/^I am on Inbox page$/) do
+#Global variables that are user for checking number of new emails
+INBOX1 = "Inbox (1)"
+INBOX2 = "Inbox (2)"
+
+Given(/^I am logged as (.*)$/) do |user_id|
   visit LoginPage
-  on(LoginPage) do |login_page|
-    login_page.access_to_another_acc_element.click if login_page.access_to_another_acc_element.exists?
-    login_page.use_another_account_element.click if login_page.use_another_account_element.exists?
-    login_page.login_field_element.click
-    login_page.login_field_element.send_keys "rubyautomationtraining@gmail.com"
-    if login_page.next_button_element.exists?
-      login_page.next_button_element.element.wd.click
-    else
-      login_page.password_next_button_element.element.wd.click
+  if on(OldLoginPage).email_field_element.exists?
+    on(OldLoginPage) do |page|
+      case user_id
+        when 'account1'
+          page.sign_in_old_page(:account1)
+      end
     end
-    login_page.password_field_element.send_keys "1qaz!QAZ1q"
-    if login_page.next_button_element.exists?
-      login_page.next_button_element.element.wd.click
-    else
-      login_page.password_next_button_element.element.wd.click
+  else
+    on(LoginPage) do |page|
+      case user_id
+        when 'account1'
+          page.sign_in(:account1)
+      end
     end
   end
+
 end
 
 When(/^I click at Google Account menu button$/) do
-  on(InboxPage) do |inbox_page|
-    inbox_page.account_menu_element.click
-  end
+  on(InboxPage).account_menu_element.click
 end
 
 And(/^I click at Sign Out button$/) do
-  on(InboxPage) do |inbox_page|
-    inbox_page.sign_out_button_element.click
-  end
+  on(InboxPage).sign_out_button_element.click
 end
 
 Then(/^I logged out$/) do
-  on(LoginPage) do |login_page|
-    expect(login_page.password_field_element).to be
-  end
+  expect(on(LoginPage).password_field_element.when_present).to be(true)
 end
 
 Given(/^I have opened Compose email pop up$/) do
-  on(InboxPage) do |inbox_page|
-    inbox_page.compose_button_element.click
-  end
+  on(InboxPage).compose_button_element.click
 end
 
 When(/^I enter my email in CC field$/) do
-  on(InboxPage) do |inbox_page|
-    inbox_page.email_to_field_element.send_keys "rubyautomationtraining@gmail.com "
-    sleep 5
-  end
+  on(InboxPage).email_to_field_element.send_keys "rubyautomationtraining@gmail.com"
 end
 
-# i cant focus because pop up blocks or because i dont know how to access input in locator
 And(/^I enter Subject$/) do
-  on(InboxPage) do |inbox_page|
-    inbox_page.subject_field_element.send_keys "Test subject"
-  end
+  on(InboxPage).subject_field_element.send_keys "Test subject"
 end
 
 
 And(/^I click Send button$/) do
-  on(InboxPage) do |inbox_page|
-    inbox_page.send_button_element.click
-  end
+  on(InboxPage).send_button_element.click
 end
 
 Then(/^email is visible on Inbox page$/) do
-  on(InboxPage) do |inbox_page|
-    expect(inbox_page.sent_email_subject_element.exists?).to be(true)
-  end
+  visit InboxPage
+  expect(on(InboxPage).sent_email_subject_element.when_present.exists?).to be(true)
 end
 
 When(/^I open email$/) do
-  on(InboxPage) do |inbox_page|
-    inbox_page.sent_email_subject_element.click
-  end
+  on(InboxPage).sent_email_subject_element.click
 end
 
 And(/^I click at Delete button$/) do
-  on(InboxPage) do |inbox_page|
-    inbox_page.delete_email_button_element.click
-  end
+  on(InboxPage).delete_email_button_element.when_present.element.wd.click
 end
 
 Then(/^email is not present in Inbox folder$/) do
-  on(InboxPage) do |inbox_page|
-    expect(inbox_page.sent_email_subject_element.exists?).to be(false)
-  end
+  visit InboxPage
+  sleep 1
+  expect(on(InboxPage).sent_email_subject_element.exists?).to be(false)
 end
 
 And(/^email is in the Trash folder$/) do
+  visit TrashFolderPage
+  sleep 2
+  expect(on(TrashFolderPage).deleted_email_subject_element.exists?).to be(true)
+end
+
+Given(/^I am in Trash folder$/) do
+  sleep 2
+  visit TrashFolderPage
+end
+
+When(/^I open mail$/) do
+  sleep 2
+  on(TrashFolderPage).deleted_email_subject_element.when_present.element.wd.click
+end
+
+And(/^I open Move menu$/) do
+  sleep 2
+  on(TrashFolderPage).remove_label_trash_element.when_present.element.wd.click
+end
+
+And(/^I click at Inbox option$/) do
+  on(TrashFolderPage).inbox_button2_element.when_present.element.wd.click
+end
+
+Then(/^email is restored into Inbox folder$/) do
+  # sleep 1
+  visit InboxPage
+  expect(on(InboxPage).sent_email_subject_element.exists?).to be(true)
+end
+
+And(/^I have entered email and Subject$/) do
   on(InboxPage) do |inbox_page|
-    inbox_page.more_folders_button_element.click
-    inbox_page.trash_folder_button_element.click
-    expect(inbox_page.sent_email_subject_element.exists?).to be(true)
+    inbox_page.email_to_field_element.send_keys "rubyautomationtraining@gmail.com"
+    # sleep 5
+    inbox_page.subject_field_element.send_keys "Test subject"
+  end
+end
+
+When(/^I click at Close button$/) do
+  on(InboxPage).close_compose_popup_button_element.element.wd.click
+end
+
+Then(/^email is saved into drafts folder$/) do
+  visit DraftsFolderPage
+  expect(on(DraftsFolderPage).drafted_email_subject_element.exists?).to be(true)
+end
+
+
+And(/^I remove mail from Trash folder to Inbox$/) do
+  on(TrashFolderPage).remove_label_trash_element.element.wd.click
+end
+
+Given(/^I have no unread emails$/) do
+  on(InboxPage) do |inbox_page|
+    inbox_page.top_page_buttons_element.when_present.element.wd.click
+    inbox_page.all_mail_checkbox_2_element.when_present.element.wd.click
+    # inbox_page.all_mail_checkbox_element.when_present.element.wd.click
+    inbox_page.top_page_buttons_element.when_present.element.wd.click
+    inbox_page.delete_all_emails_button_element.when_present.element.wd.click
+  end
+end
+
+When(/^I have new email$/) do
+  step "I have opened Compose email pop up"
+  step "I enter my email in CC field"
+  step "I enter Subject"
+  step "I click Send button"
+end
+
+
+Then(/^Inbox counter displays that i have one unread email$/) do
+  # sleep 2
+  visit InboxPage
+  expect(on(InboxPage).inbox_locator_element.when_present.text == INBOX1).to be(true)
+end
+
+Then(/^Inbox counter shows that i have two unread emails$/) do
+  # sleep 2
+  visit InboxPage
+  expect(on(InboxPage).inbox_locator_element.text == INBOX2).to be(true)
+end
+
+When(/^I read email$/) do
+  on(InboxPage).email_for_open_element.when_present.element.wd.click
+end
+
+Then(/^Inbox counter shows new updated number of unread emails$/) do
+  # sleep 2
+  visit InboxPage
+  expect(on(InboxPage).inbox_locator_element.text == INBOX1).to be(true)
+end
+
+When(/^I enter my email in TO field for (.*)$/) do |email_to|
+  on(InboxPage) do |page|
+    case email_to
+      when 'email_content1'
+        page.enter_email(:email_content1)
+    end
+  end
+end
+
+And(/^I enter Subject for (.*)$/) do |subject|
+  on(InboxPage) do |page|
+    case subject
+      when 'email_content1'
+        page.enter_subject(:email_content1)
+    end
   end
 end
